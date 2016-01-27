@@ -7,7 +7,7 @@ module.exports = function ResourceRouter(route) {
 	var router = Router(),
 		key, fn, url;
 
-	if (route.middleware) router.use(route.middleware);
+	// if (route.middleware) router.use(route.middleware);
 
 	if (route.load) {
 		router.param(route.id, function(req, res, next, id) {
@@ -20,10 +20,12 @@ module.exports = function ResourceRouter(route) {
 	}
 
 	for (key in route) {
+		var middleware = route.middleware && route.middleware[key] ? route.middleware[key] : [];
+		console.log(middleware);
 		fn = map[key] || key;
 		if (typeof router[fn]==='function') {
 			url = ~keyed.indexOf(key) ? ('/:'+route.id) : '/';
-			router[fn](url, route[key]);
+			router[fn](url, ...middleware, route[key]);
 		}
 	}
 
